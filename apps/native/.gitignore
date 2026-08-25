@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Local Gradle / xcode intermediate under native tree
+build/
+
+# Binary artifacts (safety net)
+*.apk
+*.aab
+*.ipa

@@ -6,7 +6,8 @@
     "dev:server": "turbo dev --filter=server",
     "db:generate": "turbo db:generate --filter=@todo/db",
     "db:migrate:local": "turbo db:migrate:local --filter=server",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "native:build:android": "bash scripts/build-native-android.sh"
   },
   "devDependencies": {
     "turbo": "^2.5.0",

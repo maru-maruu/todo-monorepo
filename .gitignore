@@ -7,3 +7,8 @@ dist
 .DS_Store
 .expo
 .expo-shared
+
+# Native release copies (`scripts/build-native-*.sh`)
+/build/android/*.apk
+/build/android/*.aab
+/build/ios/*.ipa
