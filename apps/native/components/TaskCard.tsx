@@ -1,8 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Check } from 'lucide-react-native';
 
 import { colors, fonts, radius, taskAccentColors } from '@/constants/theme';
 import type { TaskAccent } from '@/lib/types';
 import { formatDueLabel } from '@/lib/utils';
+
+const CIRCLE_SIZE = 24;
+const CIRCLE_STROKE = 1.75;
 
 interface TaskCardProps {
   title: string;
@@ -32,16 +36,16 @@ export function TaskCard({
       </View>
       <Pressable
         onPress={onToggleComplete}
-        style={styles.checkbox}
+        style={styles.completeButton}
         accessibilityRole="checkbox"
         accessibilityState={{ checked: completed }}
+        accessibilityLabel={completed ? 'Mark task incomplete' : 'Mark task complete'}
       >
-        <View
-          style={[
-            styles.circle,
-            completed && { backgroundColor: accentColor, borderColor: accentColor },
-          ]}
-        />
+        <View style={[styles.circle, completed && styles.circleCompleted]}>
+          {completed ? (
+            <Check size={14} color={colors.card} strokeWidth={2.5} />
+          ) : null}
+        </View>
       </Pressable>
     </View>
   );
@@ -85,14 +89,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
   },
-  checkbox: {
-    padding: 16,
+  completeButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   circle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 2,
-    borderColor: colors.beige,
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
+    borderWidth: CIRCLE_STROKE,
+    borderColor: colors.text,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleCompleted: {
+    backgroundColor: colors.accentRose,
+    borderColor: colors.accentRose,
   },
 });
