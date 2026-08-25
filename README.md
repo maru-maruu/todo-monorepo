@@ -80,6 +80,8 @@ pnpm --filter native start -- --port 8089
 
 Metro / Web プレビュー: **http://localhost:8089**
 
+本番向け Release APK は `pnpm native:build:android`（手順: [`docs/log_2026-08-25_1349_android-local-build-notes.md`](docs/log_2026-08-25_1349_android-local-build-notes.md)）。
+
 実機 / エミュレータ:
 
 ```bash
@@ -191,41 +193,65 @@ curl -c cookies.txt -b cookies.txt http://127.0.0.1:8788/api/tasks
 | `pnpm dev:server` | API サーバーのみ |
 | `pnpm db:generate` | Drizzle マイグレーション生成 |
 | `pnpm db:migrate:local` | ローカル D1 にマイグレーション適用 |
+| `pnpm --filter server db:migrate:remote` | リモート（本番）D1 にマイグレーション適用 |
+| `pnpm --filter server deploy` | Worker を Cloudflare にデプロイ |
 | `pnpm typecheck` | TypeScript 型チェック |
 
-## 本番デプロイ
+## 本番デプロイ（Workers + D1）
 
-1. D1 データベース作成:
+作業ディレクトリは `apps/server`。詳細な実行記録は [`docs/log_2026-08-25_1308_workers-production-deploy.md`](docs/log_2026-08-25_1308_workers-production-deploy.md)。
+
+### 前提
+
+- `pnpm exec wrangler whoami` でログイン済みであること
+- `apps/server/wrangler.jsonc` の `database_id` は **`wrangler d1 create` / `d1 list` / `d1 info` の出力 UUID**（捏造しない）
+- `compatibility_date` はデプロイ作業当日の日付
+- `BETTER_AUTH_SECRET` は `wrangler.jsonc` に書かない（`wrangler secret put`）
+- `.dev.vars` のローカル値を本番シークレットに流用しない
+
+### 手順
+
+1. D1 が無ければ作成し、返ってきた UUID を `wrangler.jsonc` の `database_id` に書く（binding 名はコードどおり `DB`）:
 
 ```bash
 cd apps/server
-wrangler d1 create todo-db
+pnpm exec wrangler d1 create todo-db
 ```
 
-2. `apps/server/wrangler.jsonc` の `database_id` を出力された UUID に更新
-
-3. リモートマイグレーション:
+2. 本番 D1 にマイグレーション適用:
 
 ```bash
-pnpm db:generate
-cd apps/server
-wrangler d1 migrations apply todo-db --remote
+pnpm db:migrate:remote
+# または: pnpm exec wrangler d1 migrations apply todo-db --remote
 ```
 
-4. シークレット設定:
+3. シークレット設定（対話プロンプト。値を echo で渡さない）:
 
 ```bash
-wrangler secret put BETTER_AUTH_SECRET
+pnpm exec wrangler secret put BETTER_AUTH_SECRET
+```
+
+4. 設定検証（デプロイしない）:
+
+```bash
+pnpm exec wrangler deploy --dry-run
 ```
 
 5. デプロイ:
 
 ```bash
-wrangler deploy
+pnpm deploy
 ```
 
-`BETTER_AUTH_URL` はデプロイ後の Workers URL に合わせて設定してください。
+6. 出力された `https://todo-server.<SUBDOMAIN>.workers.dev` を `wrangler.jsonc` の `vars.BETTER_AUTH_URL` に書き、必要なら再デプロイ。
 
+7. ヘルスチェック:
+
+```bash
+curl https://todo-server.<SUBDOMAIN>.workers.dev/api/health
+```
+
+Native クライアントは `EXPO_PUBLIC_API_URL` を同じ本番 URL に合わせ、ビルドし直す。
 ## 技術スタック
 
 - **Monorepo**: pnpm + Turborepo
