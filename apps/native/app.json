@@ -12,7 +12,7 @@
       "bundleIdentifier": "com.todoapp.native"
     },
     "android": {
-      "package": "com.todoapp.native",
+      "package": "com.todoapp.app",
       "adaptiveIcon": {
         "backgroundColor": "#FCFBF4",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -35,7 +35,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#FCFBF4"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true
