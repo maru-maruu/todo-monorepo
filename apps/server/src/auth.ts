@@ -23,6 +23,10 @@ export function createAuth(db: DrizzleDb, env: Env) {
       },
     }),
     plugins: [expo()],
+    session: {
+      expiresIn: 60 * 60 * 24 * 400, // 400 days (Workers Cookie Max-Age cap)
+      updateAge: 60 * 60 * 24, // 1 day
+    },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,

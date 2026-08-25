@@ -2,13 +2,21 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "todo-server",
   "main": "src/index.ts",
-  "compatibility_date": "2024-12-01",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2026-08-25",
+  "observability": {
+    "enabled": true
+  },
+  "secrets": {
+    "required": ["BETTER_AUTH_SECRET"]
+  },
+  "vars": {
+    "BETTER_AUTH_URL": "https://todo-server.maru-maru.workers.dev"
+  },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "todo-db",
-      "database_id": "00000000-0000-0000-0000-000000000001",
+      "database_id": "7999422b-186d-4b57-b1bf-fb2af0a8e469",
       "migrations_dir": "../../packages/db/migrations"
     }
   ]
