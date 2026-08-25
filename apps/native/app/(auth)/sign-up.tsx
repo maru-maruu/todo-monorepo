@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { signUp } from '@/lib/auth';
+import { getAuthErrorMessage, signUp } from '@/lib/auth';
 import { colors, fonts, radius } from '@/constants/theme';
 
 export default function SignUpScreen() {
@@ -28,7 +28,7 @@ export default function SignUpScreen() {
     try {
       const result = await signUp.email({ name, email, password });
       if (result.error) {
-        setError(result.error.message ?? 'Sign up failed');
+        setError(getAuthErrorMessage(result.error, 'Sign up failed'));
       }
     } catch {
       setError('Unable to connect. Check your API URL.');
