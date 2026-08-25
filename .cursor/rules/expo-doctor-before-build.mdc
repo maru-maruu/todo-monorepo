@@ -1,0 +1,29 @@
+---
+description: Native ビルドの前に Expo Doctor を必ず実行する
+alwaysApply: true
+---
+
+# Native ビルド前の Expo Doctor
+
+Android / iOS のネイティブビルドを始める前に、**必ず** Expo Doctor を実行する。前回成功していても省略しない。
+
+## 対象
+
+- `pnpm native:build:android`
+- `expo prebuild` / `expo run:android` / `expo run:ios`
+- `./gradlew assembleRelease` など Gradle / Xcode の本番・Release ビルド
+- IPA 書き出し、EAS Build
+
+## 実行
+
+`apps/native` で:
+
+```bash
+pnpm dlx expo-doctor@latest
+```
+
+`npx` / `npm` は使わない。
+
+## 失敗時
+
+Doctor が失敗したらビルドに進まない。指摘を報告し、直すかユーザー確認を待つ。スキップや環境変数でのチェック無効化は、ユーザーが明示したときだけ。
