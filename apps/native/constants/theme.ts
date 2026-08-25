@@ -53,12 +53,12 @@ export type TaskAccent = keyof typeof taskAccentColors;
 export const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as const;
 
 export const dailyIconOptions = [
-  'Users',
-  'Palmtree',
-  'FileCode',
-  'Coffee',
-  'BookOpen',
-  'Dumbbell',
+  'users',
+  'palmtree',
+  'filecode',
+  'coffee',
+  'bookopen',
+  'dumbbell',
 ] as const;
 
 export type DailyIconName = (typeof dailyIconOptions)[number];

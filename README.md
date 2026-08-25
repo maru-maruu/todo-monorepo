@@ -75,8 +75,10 @@ curl http://127.0.0.1:8788/api/health
 ### 5. Expo（ネイティブアプリ）起動
 
 ```bash
-pnpm --filter native start
+pnpm --filter native start -- --port 8089
 ```
+
+Metro / Web プレビュー: **http://localhost:8089**
 
 実機 / エミュレータ:
 
@@ -93,7 +95,33 @@ pnpm --filter native exec expo run:ios
 http://10.0.2.2:8788
 ```
 
+`apps/native/.env` に `EXPO_PUBLIC_API_URL=http://10.0.2.2:8788` を設定してください。
+
 iOS シミュレータは `http://127.0.0.1:8788` をそのまま利用できます。
+
+#### Android エミュレータのセットアップ（Android Studio）
+
+このリポジトリの Cloud Agent VM では SDK 未導入の場合があります。ローカルでは次の手順で準備します:
+
+1. [Android Studio](https://developer.android.com/studio) をインストール
+2. **SDK Manager** → **SDK Platforms** で **Android 14 (API 34)** をインストール
+3. **SDK Manager** → **SDK Tools** で **Android SDK Command-line Tools**、**Android Emulator**、**Android SDK Platform-Tools** を有効化
+4. **Device Manager** で **Create Virtual Device** → API 34 x86_64 イメージのエミュレータを作成
+5. 環境変数（例）:
+
+```bash
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools"
+```
+
+6. エミュレータ起動後:
+
+```bash
+cd apps/native
+cp .env.example .env
+# EXPO_PUBLIC_API_URL=http://10.0.2.2:8788 に編集
+pnpm android
+```
 
 ## API 概要
 

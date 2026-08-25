@@ -9,12 +9,14 @@ import type {
   CreateDailyTaskInput,
   CreateTaskInput,
   DailyTask,
-  Settings,
+  ExportData,
   Task,
   UpdateDailyTaskInput,
   UpdateSettingsInput,
   UpdateTaskInput,
+  UserSettings,
 } from './types';
+import { mapApiSettingsToDb, mapUserSettingsToApi } from './types';
 
 export const queryKeys = {
   tasks: ['tasks'] as const,
@@ -108,18 +110,23 @@ export function useDeleteDailyTask() {
 export function useSettings() {
   return useQuery({
     queryKey: queryKeys.settings,
-    queryFn: () => apiFetch<Settings>('/api/settings'),
+    queryFn: async () => {
+      const row = await apiFetch<UserSettings>('/api/settings');
+      return mapUserSettingsToApi(row);
+    },
   });
 }
 
 export function useUpdateSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: UpdateSettingsInput) =>
-      apiFetch<Settings>('/api/settings', {
+    mutationFn: async (input: UpdateSettingsInput) => {
+      const row = await apiFetch<UserSettings>('/api/settings', {
         method: 'PATCH',
-        body: JSON.stringify(input),
-      }),
+        body: JSON.stringify(mapApiSettingsToDb(input)),
+      });
+      return mapUserSettingsToApi(row);
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.settings }),
   });
@@ -136,6 +143,6 @@ export function useClearCompleted() {
 
 export function useExportTasks() {
   return useMutation({
-    mutationFn: () => apiFetch<{ data: string }>('/api/settings/export'),
+    mutationFn: () => apiFetch<ExportData>('/api/settings/export'),
   });
 }

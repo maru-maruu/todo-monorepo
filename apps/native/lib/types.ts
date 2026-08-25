@@ -69,3 +69,23 @@ export function mapUserSettingsToApi(settings: UserSettings): Settings {
     accentColor: settings.accentColor as TaskAccent,
   };
 }
+
+export function mapApiSettingsToDb(input: UpdateSettingsInput): Record<string, unknown> {
+  const body: Record<string, unknown> = {};
+  if (input.notifications !== undefined) {
+    body.notificationsEnabled = input.notifications;
+  }
+  if (input.reminderTime !== undefined) body.reminderTime = input.reminderTime;
+  if (input.theme !== undefined) {
+    body.theme = input.theme === 'Light Cream' ? 'light-cream' : input.theme;
+  }
+  if (input.accentColor !== undefined) body.accentColor = input.accentColor;
+  return body;
+}
+
+export interface ExportData {
+  exportedAt: string;
+  settings: UserSettings;
+  tasks: Task[];
+  dailyTasks: DailyTask[];
+}

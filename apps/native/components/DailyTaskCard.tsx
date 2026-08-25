@@ -10,18 +10,23 @@ import {
 } from 'lucide-react-native';
 
 import { IOSSwitch } from '@/components/IOSSwitch';
-import { colors, dayLabels, fonts, radius } from '@/constants/theme';
+import { colors, dayLabels, dailyIconOptions, fonts, radius } from '@/constants/theme';
 import { formatScheduleText } from '@/lib/utils';
 import type { DailyIconName } from '@/constants/theme';
 
 const iconMap: Record<DailyIconName, LucideIcon> = {
-  Users,
-  Palmtree,
-  FileCode,
-  Coffee,
-  BookOpen,
-  Dumbbell,
+  users: Users,
+  palmtree: Palmtree,
+  filecode: FileCode,
+  coffee: Coffee,
+  bookopen: BookOpen,
+  dumbbell: Dumbbell,
 };
+
+function resolveDailyIcon(icon: string): LucideIcon {
+  const key = dailyIconOptions.find((name) => name === icon.toLowerCase());
+  return iconMap[key ?? 'users'];
+}
 
 interface DailyTaskCardProps {
   title: string;
@@ -40,8 +45,7 @@ export function DailyTaskCard({
   enabled,
   onToggleEnabled,
 }: DailyTaskCardProps) {
-  const IconComponent =
-    iconMap[icon as DailyIconName] ?? FileCode;
+  const IconComponent = resolveDailyIcon(icon);
   const schedule = formatScheduleText(time, days);
 
   return (

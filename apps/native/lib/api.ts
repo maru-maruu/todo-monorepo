@@ -1,4 +1,8 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://127.0.0.1:8787';
+import { Platform } from 'react-native';
+
+import { authClient } from './auth';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://127.0.0.1:8788';
 
 export class ApiError extends Error {
   constructor(
@@ -15,13 +19,24 @@ export async function apiFetch<T>(
   options?: RequestInit,
 ): Promise<T> {
   const url = `${API_URL}${path}`;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string> | undefined),
+  };
+
+  let credentials: RequestCredentials = 'include';
+  const cookies = await authClient.getCookie();
+  if (cookies) {
+    headers.Cookie = cookies;
+    credentials = 'omit';
+  } else if (Platform.OS === 'web') {
+    credentials = 'include';
+  }
+
   const response = await fetch(url, {
     ...options,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+    credentials,
+    headers,
   });
 
   if (!response.ok) {

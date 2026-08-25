@@ -24,12 +24,12 @@ import { colors, dailyIconOptions, dayLabels, fonts, radius } from '@/constants/
 import type { DailyIconName } from '@/constants/theme';
 
 const iconMap: Record<DailyIconName, LucideIcon> = {
-  Users,
-  Palmtree,
-  FileCode,
-  Coffee,
-  BookOpen,
-  Dumbbell,
+  users: Users,
+  palmtree: Palmtree,
+  filecode: FileCode,
+  coffee: Coffee,
+  bookopen: BookOpen,
+  dumbbell: Dumbbell,
 };
 
 interface AddDailyTaskSheetProps {
@@ -54,7 +54,7 @@ export function AddDailyTaskSheet({
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(new Date());
   const [days, setDays] = useState<number[]>([0, 1, 2, 3, 4]);
-  const [icon, setIcon] = useState<DailyIconName>('Users');
+  const [icon, setIcon] = useState<DailyIconName>('users');
   const [showPicker, setShowPicker] = useState(false);
 
   const toggleDay = (day: number) => {
@@ -77,14 +77,14 @@ export function AddDailyTaskSheet({
     setTitle('');
     setTime(new Date());
     setDays([0, 1, 2, 3, 4]);
-    setIcon('Users');
+    setIcon('users');
   };
 
   const handleClose = () => {
     setTitle('');
     setTime(new Date());
     setDays([0, 1, 2, 3, 4]);
-    setIcon('Users');
+    setIcon('users');
     onClose();
   };
 

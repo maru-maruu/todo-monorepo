@@ -6,7 +6,7 @@ Warm cream mobile todo app built with Expo Router, TanStack Query, and better-au
 
 - Node.js 20+
 - pnpm (from monorepo root)
-- For Android: Android SDK / emulator (see `expo run:android` below)
+- For Android: Android SDK / emulator (see below)
 
 ## Environment
 
@@ -18,9 +18,9 @@ cp .env.example .env
 
 | Variable | Default | Notes |
 |----------|---------|-------|
-| `EXPO_PUBLIC_API_URL` | `http://127.0.0.1:8787` | Backend base URL (no trailing slash) |
+| `EXPO_PUBLIC_API_URL` | `http://127.0.0.1:8788` | Backend base URL (no trailing slash) |
 
-**Android emulator:** use `http://10.0.2.2:<port>` instead of `127.0.0.1` (e.g. `http://10.0.2.2:8787` or `8788` if the server uses that port).
+**Android emulator:** use `http://10.0.2.2:8788` instead of `127.0.0.1`.
 
 ## Install
 
@@ -36,20 +36,16 @@ From the monorepo root or this directory:
 
 ```bash
 cd apps/native
-pnpm start
-```
-
-Or with a custom Metro port:
-
-```bash
 pnpm start -- --port 8089
 ```
+
+Metro default in this repo: **http://localhost:8089** (web preview: same URL in browser).
 
 Scan the QR code with Expo Go, or press `a` for Android emulator / `i` for iOS simulator.
 
 ## Run on Android (native build)
 
-Generates `android/` via prebuild if needed, then builds and runs on a connected device or emulator:
+Requires Android Studio with SDK, emulator, and platform tools installed (see root README).
 
 ```bash
 cd apps/native
@@ -58,7 +54,7 @@ pnpm android
 # or: npx expo run:android
 ```
 
-Ensure `EXPO_PUBLIC_API_URL` points to `http://10.0.2.2:<port>` for the Android emulator.
+Set `EXPO_PUBLIC_API_URL=http://10.0.2.2:8788` in `.env` for the Android emulator.
 
 ## Typecheck
 
