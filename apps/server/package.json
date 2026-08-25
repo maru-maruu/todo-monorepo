@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8788 --ip 0.0.0.0",
+    "db:migrate:local": "wrangler d1 migrations apply todo-db --local",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/expo": "^1.2.8",
+    "@todo/db": "workspace:*",
+    "better-auth": "^1.2.8",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.7.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.14.0"
+  }
+}

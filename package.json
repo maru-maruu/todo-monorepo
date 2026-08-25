@@ -1,0 +1,16 @@
+{
+  "name": "todo-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:server": "turbo dev --filter=server",
+    "db:generate": "turbo db:generate --filter=@todo/db",
+    "db:migrate:local": "turbo db:migrate:local --filter=server",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.2"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
