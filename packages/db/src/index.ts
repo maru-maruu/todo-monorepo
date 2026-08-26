@@ -1,9 +1,8 @@
 export * from "./schema";
 export type {
-  DailyTask,
-  NewDailyTask,
   NewTask,
   NewUserSettings,
+  RepeatType,
   Task,
   TaskAccent,
   UserSettings,
