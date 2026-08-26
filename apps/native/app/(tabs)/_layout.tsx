@@ -8,9 +8,9 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => {
         const activeRoute = props.state.routes[props.state.index]?.name;
-        const tabMap: Record<string, 'tasks' | 'daily' | 'settings'> = {
+        const tabMap: Record<string, 'tasks' | 'recurring' | 'settings'> = {
           index: 'tasks',
-          daily: 'daily',
+          recurring: 'recurring',
           settings: 'settings',
         };
         const activeTab = tabMap[activeRoute] ?? 'tasks';
@@ -21,7 +21,7 @@ export default function TabLayout() {
             onTabPress={(tab) => {
               const routeMap = {
                 tasks: 'index',
-                daily: 'daily',
+                recurring: 'recurring',
                 settings: 'settings',
               } as const;
               props.navigation.navigate(routeMap[tab]);
@@ -36,7 +36,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Tasks' }} />
-      <Tabs.Screen name="daily" options={{ title: 'Daily' }} />
+      <Tabs.Screen name="recurring" options={{ title: 'Recurring' }} />
       <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );

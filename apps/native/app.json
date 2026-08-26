@@ -7,6 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "todoapp",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "barStyle": "dark-content"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.todoapp.native"

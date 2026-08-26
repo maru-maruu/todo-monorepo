@@ -1,53 +1,91 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Check } from 'lucide-react-native';
+import {
+  BookOpen,
+  Check,
+  Coffee,
+  Dumbbell,
+  FileCode,
+  Palmtree,
+  Users,
+  type LucideIcon,
+} from 'lucide-react-native';
 
-import { colors, fonts, radius, taskAccentColors } from '@/constants/theme';
-import type { TaskAccent } from '@/lib/types';
-import { formatDueLabel } from '@/lib/utils';
+import { colors, taskIconOptions, fonts, radius, taskAccentColors } from '@/constants/theme';
+import type { TaskIconName } from '@/constants/theme';
+import type { Task } from '@/lib/types';
+import {
+  formatDateDisplay,
+  formatDueLabel,
+  formatRepeatSummary,
+  formatTimeDisplay,
+} from '@/lib/utils';
+
+const iconMap: Record<TaskIconName, LucideIcon> = {
+  users: Users,
+  palmtree: Palmtree,
+  filecode: FileCode,
+  coffee: Coffee,
+  bookopen: BookOpen,
+  dumbbell: Dumbbell,
+};
 
 const CIRCLE_SIZE = 24;
 const CIRCLE_STROKE = 1.75;
 
+function resolveTaskIcon(icon: string): LucideIcon {
+  const key = taskIconOptions.find((name) => name === icon.toLowerCase());
+  return iconMap[key ?? 'users'];
+}
+
 interface TaskCardProps {
-  title: string;
-  dueDate: string;
-  accent: TaskAccent;
-  completed: boolean;
+  task: Task;
+  onPress: () => void;
   onToggleComplete: () => void;
 }
 
-export function TaskCard({
-  title,
-  dueDate,
-  accent,
-  completed,
-  onToggleComplete,
-}: TaskCardProps) {
-  const accentColor = taskAccentColors[accent];
+/** タスク一覧で使う共有カード。タップで編集、チェックで完了を切り替える。 */
+export function TaskCard({ task, onPress, onToggleComplete }: TaskCardProps) {
+  const isComplete = task.completedAt != null;
+  const accentColor = taskAccentColors[task.accent];
+  const IconComponent = resolveTaskIcon(task.icon);
+  const repeatSummary = formatRepeatSummary(task.repeatType, task.repeatWeekdays);
 
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={onPress}>
       <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+      <View style={styles.iconSquare}>
+        <IconComponent size={22} color={colors.text} strokeWidth={1.8} />
+      </View>
       <View style={styles.content}>
-        <Text style={[styles.title, completed && styles.titleCompleted]} numberOfLines={2}>
-          {title}
+        <Text style={[styles.title, isComplete && styles.titleCompleted]} numberOfLines={2}>
+          {task.name}
         </Text>
-        <Text style={styles.due}>Due: {formatDueLabel(dueDate)}</Text>
+        {task.startDate ? (
+          <Text style={styles.meta}>Start: {formatDateDisplay(task.startDate)}</Text>
+        ) : null}
+        {task.dueDate ? (
+          <Text style={styles.meta}>Due: {formatDueLabel(task.dueDate)}</Text>
+        ) : null}
+        {task.dueTime ? (
+          <Text style={styles.meta}>Time: {formatTimeDisplay(task.dueTime)}</Text>
+        ) : null}
+        {repeatSummary ? <Text style={styles.meta}>{repeatSummary}</Text> : null}
       </View>
       <Pressable
-        onPress={onToggleComplete}
+        onPress={(event) => {
+          event.stopPropagation();
+          onToggleComplete();
+        }}
         style={styles.completeButton}
         accessibilityRole="checkbox"
-        accessibilityState={{ checked: completed }}
-        accessibilityLabel={completed ? 'Mark task incomplete' : 'Mark task complete'}
+        accessibilityState={{ checked: isComplete }}
+        accessibilityLabel={isComplete ? 'Mark task incomplete' : 'Mark task complete'}
       >
-        <View style={[styles.circle, completed && styles.circleCompleted]}>
-          {completed ? (
-            <Check size={14} color={colors.card} strokeWidth={2.5} />
-          ) : null}
+        <View style={[styles.circle, isComplete && styles.circleCompleted]}>
+          {isComplete ? <Check size={14} color={colors.card} strokeWidth={2.5} /> : null}
         </View>
       </Pressable>
-    </View>
+    </Pressable>
   );
 }
 
@@ -69,22 +107,31 @@ const styles = StyleSheet.create({
     width: 6,
     alignSelf: 'stretch',
   },
+  iconSquare: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    backgroundColor: colors.iconSquare,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
   content: {
     flex: 1,
-    paddingVertical: 16,
-    paddingLeft: 14,
+    paddingVertical: 14,
+    paddingLeft: 10,
     paddingRight: 8,
+    gap: 2,
   },
   title: {
     fontFamily: fonts.lora,
     fontSize: 17,
     color: colors.text,
-    marginBottom: 4,
   },
   titleCompleted: {
     opacity: 0.5,
   },
-  due: {
+  meta: {
     fontFamily: fonts.inter,
     fontSize: 12,
     color: colors.textMuted,

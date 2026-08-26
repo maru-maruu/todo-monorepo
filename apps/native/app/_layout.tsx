@@ -7,6 +7,7 @@ import {
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
@@ -68,6 +69,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
+      <StatusBar style="dark" />
       <QueryProvider>
         <AuthGate>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>

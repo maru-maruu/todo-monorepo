@@ -6,7 +6,7 @@ import { colors, fonts, radius } from '@/constants/theme';
 interface PillButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'tasks' | 'daily';
+  variant?: 'tasks' | 'recurring';
   icon?: 'plus' | 'plus-circle';
 }
 
@@ -16,7 +16,7 @@ export function PillButton({
   variant = 'tasks',
   icon = 'plus',
 }: PillButtonProps) {
-  const bgColor = variant === 'tasks' ? colors.fabTasks : colors.fabDaily;
+  const bgColor = variant === 'tasks' ? colors.fabTasks : colors.fabRecurring;
   const IconComponent = icon === 'plus-circle' ? PlusCircle : Plus;
 
   return (

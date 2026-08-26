@@ -4,7 +4,7 @@ export const colors = {
   textMuted: '#9B9593',
   accentRose: '#D89B94',
   fabTasks: '#5C4A3A',
-  fabDaily: '#8B7355',
+  fabRecurring: '#8B7355',
   iconSquare: '#F3EFEA',
   card: '#FFFFFF',
   accentPink: '#E88B85',
@@ -52,7 +52,7 @@ export type TaskAccent = keyof typeof taskAccentColors;
 
 export const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as const;
 
-export const dailyIconOptions = [
+export const taskIconOptions = [
   'users',
   'palmtree',
   'filecode',
@@ -61,4 +61,4 @@ export const dailyIconOptions = [
   'dumbbell',
 ] as const;
 
-export type DailyIconName = (typeof dailyIconOptions)[number];
+export type TaskIconName = (typeof taskIconOptions)[number];

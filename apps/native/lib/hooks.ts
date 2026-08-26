@@ -6,24 +6,22 @@ import {
 
 import { apiFetch } from './api';
 import type {
-  CreateDailyTaskInput,
   CreateTaskInput,
-  DailyTask,
   ExportData,
   Task,
-  UpdateDailyTaskInput,
   UpdateSettingsInput,
   UpdateTaskInput,
   UserSettings,
 } from './types';
 import { mapApiSettingsToDb, mapUserSettingsToApi } from './types';
 
+/** React Query のクエリキー定義。 */
 export const queryKeys = {
   tasks: ['tasks'] as const,
-  dailyTasks: ['daily-tasks'] as const,
   settings: ['settings'] as const,
 };
 
+/** ログインユーザーの全タスクを取得する。 */
 export function useTasks() {
   return useQuery({
     queryKey: queryKeys.tasks,
@@ -31,6 +29,7 @@ export function useTasks() {
   });
 }
 
+/** 新しいタスクを作成する。 */
 export function useCreateTask() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -43,6 +42,7 @@ export function useCreateTask() {
   });
 }
 
+/** 既存タスクを部分更新する。完了トグルは completedAt を送る。 */
 export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -55,6 +55,7 @@ export function useUpdateTask() {
   });
 }
 
+/** タスクを削除する。 */
 export function useDeleteTask() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -64,49 +65,7 @@ export function useDeleteTask() {
   });
 }
 
-export function useDailyTasks() {
-  return useQuery({
-    queryKey: queryKeys.dailyTasks,
-    queryFn: () => apiFetch<DailyTask[]>('/api/daily-tasks'),
-  });
-}
-
-export function useCreateDailyTask() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (input: CreateDailyTaskInput) =>
-      apiFetch<DailyTask>('/api/daily-tasks', {
-        method: 'POST',
-        body: JSON.stringify(input),
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.dailyTasks }),
-  });
-}
-
-export function useUpdateDailyTask() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateDailyTaskInput & { id: string }) =>
-      apiFetch<DailyTask>(`/api/daily-tasks/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(input),
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.dailyTasks }),
-  });
-}
-
-export function useDeleteDailyTask() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch<void>(`/api/daily-tasks/${id}`, { method: 'DELETE' }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.dailyTasks }),
-  });
-}
-
+/** ユーザー設定を取得する。 */
 export function useSettings() {
   return useQuery({
     queryKey: queryKeys.settings,
@@ -117,6 +76,7 @@ export function useSettings() {
   });
 }
 
+/** ユーザー設定を更新する。 */
 export function useUpdateSettings() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -132,6 +92,7 @@ export function useUpdateSettings() {
   });
 }
 
+/** 完了済みタスクを一括削除する。 */
 export function useClearCompleted() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -141,6 +102,7 @@ export function useClearCompleted() {
   });
 }
 
+/** タスクと設定をエクスポートする。 */
 export function useExportTasks() {
   return useMutation({
     mutationFn: () => apiFetch<ExportData>('/api/settings/export'),

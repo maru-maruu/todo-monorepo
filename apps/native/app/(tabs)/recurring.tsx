@@ -21,7 +21,7 @@ import {
   useTasks,
   useUpdateTask,
 } from '@/lib/hooks';
-import { filterTasksForToday, getTodayDateString } from '@/lib/task-filters';
+import { filterTasksForRecurring, getTodayDateString } from '@/lib/task-filters';
 import type { CreateTaskInput, Task } from '@/lib/types';
 import { colors, fonts } from '@/constants/theme';
 
@@ -42,8 +42,15 @@ function taskToSheetValue(task: Task): TaskSheetInitialValue {
   };
 }
 
-/** Today タブ。今日表示対象のタスク一覧と追加・編集・完了・削除を扱う。 */
-export default function TasksScreen() {
+const recurringCreateDefaults: TaskSheetInitialValue = {
+  name: '',
+  repeatType: 'weekly',
+  repeatWeekdays: [0, 1, 2, 3, 4],
+  startDate: getTodayDateString(),
+};
+
+/** Recurring タブ。繰り返しタスクの一覧と追加・編集・完了・削除を扱う。 */
+export default function RecurringScreen() {
   const { data: allTasks, isLoading, error, refetch } = useTasks();
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
@@ -53,17 +60,17 @@ export default function TasksScreen() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
 
-  const todayTasks = useMemo(
-    () => filterTasksForToday(allTasks ?? []),
+  const recurringTasks = useMemo(
+    () => filterTasksForRecurring(allTasks ?? []),
     [allTasks],
   );
 
   const sheetInitialValue: TaskSheetInitialValue | undefined = editingTask
     ? taskToSheetValue(editingTask)
-    : { name: '', dueDate: getTodayDateString(), repeatType: null };
+    : recurringCreateDefaults;
 
   const isEditing = editingTask != null;
-  const sheetHeading = isEditing ? 'Edit Task' : 'Add New Task';
+  const sheetHeading = isEditing ? 'Edit Task' : 'Add Recurring Task';
   const sheetSubmitLabel = isEditing ? 'Save Changes' : 'Add Task';
   const sheetLoading = isEditing ? updateTask.isPending : createTask.isPending;
 
@@ -117,15 +124,15 @@ export default function TasksScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Greeting />
-          <Text style={styles.title}>Today's Tasks</Text>
+          <Text style={styles.title}>Recurring</Text>
 
           {isLoading ? (
             <ActivityIndicator color={colors.accentRose} style={styles.loader} />
           ) : error ? (
             <ErrorState message="Couldn't load tasks" onRetry={() => refetch()} />
-          ) : todayTasks.length > 0 ? (
+          ) : recurringTasks.length > 0 ? (
             <>
-              {todayTasks.map((task) => (
+              {recurringTasks.map((task) => (
                 <SwipeableDeleteRow
                   key={task.id}
                   onDelete={() => setDeleteTarget(task)}
@@ -141,16 +148,17 @@ export default function TasksScreen() {
             </>
           ) : (
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>No tasks yet. Add one below!</Text>
+              <Text style={styles.emptyText}>No recurring tasks yet</Text>
             </View>
           )}
         </ScrollView>
 
         <View style={styles.fabContainer}>
           <PillButton
-            label="Add New Task"
+            label="Add Recurring Task"
             onPress={openCreateSheet}
-            variant="tasks"
+            variant="recurring"
+            icon="plus-circle"
           />
         </View>
       </View>
