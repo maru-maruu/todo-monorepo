@@ -1,5 +1,5 @@
-import { dailyTasks, tasks, userSettings } from "@todo/db";
-import { and, eq } from "drizzle-orm";
+import { tasks, userSettings } from "@todo/db";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { Hono } from "hono";
 import type { AppEnv } from "../types";
 
@@ -70,7 +70,7 @@ settingsRouter.post("/clear-completed", async (c) => {
 
   const deleted = await db
     .delete(tasks)
-    .where(and(eq(tasks.userId, user.id), eq(tasks.completed, true)))
+    .where(and(eq(tasks.userId, user.id), isNotNull(tasks.completedAt)))
     .returning();
 
   return c.json({ deletedCount: deleted.length });
@@ -80,9 +80,8 @@ settingsRouter.get("/export", async (c) => {
   const user = c.get("user");
   const db = c.get("db");
 
-  const [userTasks, userDailyTasks, settings] = await Promise.all([
+  const [userTasks, settings] = await Promise.all([
     db.select().from(tasks).where(eq(tasks.userId, user.id)),
-    db.select().from(dailyTasks).where(eq(dailyTasks.userId, user.id)),
     getOrCreateSettings(db, user.id),
   ]);
 
@@ -90,7 +89,6 @@ settingsRouter.get("/export", async (c) => {
     exportedAt: new Date().toISOString(),
     settings,
     tasks: userTasks,
-    dailyTasks: userDailyTasks,
   });
 });
 

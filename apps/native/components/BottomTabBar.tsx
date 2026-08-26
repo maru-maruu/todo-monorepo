@@ -7,8 +7,9 @@ import {
 } from 'lucide-react-native';
 
 import { colors, fonts } from '@/constants/theme';
+import { useBottomSafeInset } from '@/lib/use-bottom-safe-inset';
 
-type TabName = 'tasks' | 'daily' | 'settings';
+type TabName = 'tasks' | 'recurring' | 'settings';
 
 interface BottomTabBarProps {
   activeTab: TabName;
@@ -17,13 +18,15 @@ interface BottomTabBarProps {
 
 const tabs: { key: TabName; label: string; Icon: typeof Calendar }[] = [
   { key: 'tasks', label: 'Tasks', Icon: SquareCheck },
-  { key: 'daily', label: 'Daily', Icon: Calendar },
+  { key: 'recurring', label: 'Recurring', Icon: Calendar },
   { key: 'settings', label: 'Settings', Icon: Settings },
 ];
 
 export function BottomTabBar({ activeTab, onTabPress }: BottomTabBarProps) {
+  const bottomInset = useBottomSafeInset();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: 4 + bottomInset }]}>
       {tabs.map(({ key, label, Icon }) => {
         const isActive = activeTab === key;
         const color = isActive ? colors.accentRose : colors.textMuted;
@@ -56,7 +59,6 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.beige,
     paddingTop: 8,
-    paddingBottom: 4,
   },
   tab: {
     flex: 1,

@@ -5,17 +5,21 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./repeat": "./src/repeat.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
+    "test:repeat": "tsx src/repeat.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.4",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.2"
   }
 }

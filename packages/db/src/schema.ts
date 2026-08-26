@@ -96,28 +96,24 @@ export const tasks = sqliteTable("tasks", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  dueDate: text("due_date"),
+  name: text("name").notNull(),
+  notes: text("notes"),
+  icon: text("icon").notNull().default("users"),
   accent: text("accent", { enum: ["pink", "brown", "green"] })
     .notNull()
     .default("pink"),
-  completed: integer("completed", { mode: "boolean" }).notNull().default(false),
+  startDate: text("start_date"),
+  dueDate: text("due_date"),
+  dueTime: text("due_time"),
+  repeatType: text("repeat_type", {
+    enum: ["daily", "weekly", "monthly", "yearly"],
+  }),
+  repeatWeekdays: text("repeat_weekdays", { mode: "json" }).$type<number[]>(),
+  completedAt: integer("completed_at", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
-});
-
-export const dailyTasks = sqliteTable("daily_tasks", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  icon: text("icon").notNull().default("users"),
-  time: text("time").notNull(),
-  days: text("days", { mode: "json" }).$type<number[]>().notNull(),
-  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
+  lastModifiedAt: integer("last_modified_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
 });
@@ -138,7 +134,6 @@ export const userRelations = relations(user, ({ many, one }) => ({
   sessions: many(session),
   accounts: many(account),
   tasks: many(tasks),
-  dailyTasks: many(dailyTasks),
   settings: one(userSettings),
 }));
 
@@ -154,15 +149,13 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
   user: one(user, { fields: [tasks.userId], references: [user.id] }),
 }));
 
-export const dailyTasksRelations = relations(dailyTasks, ({ one }) => ({
-  user: one(user, { fields: [dailyTasks.userId], references: [user.id] }),
-}));
-
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
   user: one(user, { fields: [userSettings.userId], references: [user.id] }),
 }));
 
 export type TaskAccent = "pink" | "brown" | "green";
 
-/** Weekday indices: 0 = Monday … 6 = Sunday (JSON number array in `daily_tasks.days`). */
+export type RepeatType = "daily" | "weekly" | "monthly" | "yearly";
+
+/** Weekday indices: 0 = Monday … 6 = Sunday (JSON number array in `repeatWeekdays`). */
 export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
