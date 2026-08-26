@@ -7,12 +7,18 @@ import {
 } from "@todo/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { uuidv7 } from "./lib/uuid";
 import type { DrizzleDb, Env } from "./types";
 
 export function createAuth(db: DrizzleDb, env: Env) {
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
+    advanced: {
+      database: {
+        generateId: () => uuidv7(),
+      },
+    },
     database: drizzleAdapter(db, {
       provider: "sqlite",
       schema: {

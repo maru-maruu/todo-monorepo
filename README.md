@@ -135,11 +135,9 @@ pnpm android
 | GET/POST | `/api/auth/*` | 不要 | Better Auth（サインアップ / サインイン等） |
 | GET/POST | `/api/tasks` | 必要 | タスク一覧 / 作成 |
 | PATCH/DELETE | `/api/tasks/:id` | 必要 | タスク更新 / 削除 |
-| GET/POST | `/api/daily-tasks` | 必要 | デイリータスク一覧 / 作成 |
-| PATCH/DELETE | `/api/daily-tasks/:id` | 必要 | デイリータスク更新 / 削除 |
 | GET/PATCH | `/api/settings` | 必要 | ユーザー設定 |
 | POST | `/api/settings/clear-completed` | 必要 | 完了済みタスク一括削除 |
-| GET | `/api/settings/export` | 必要 | タスク・デイリータスク JSON エクスポート |
+| GET | `/api/settings/export` | 必要 | タスク JSON エクスポート |
 
 ### 認証
 
@@ -160,7 +158,7 @@ curl -c cookies.txt -b cookies.txt \
 curl -c cookies.txt -b cookies.txt \
   -X POST http://127.0.0.1:8788/api/tasks \
   -H 'Content-Type: application/json' \
-  -d '{"title":"Buy milk","dueDate":"2026-08-25","accent":"green"}'
+  -d '{"name":"Buy milk","dueDate":"2026-08-25","accent":"green"}'
 
 # タスク一覧
 curl -c cookies.txt -b cookies.txt http://127.0.0.1:8788/api/tasks
@@ -172,14 +170,24 @@ curl -c cookies.txt -b cookies.txt http://127.0.0.1:8788/api/tasks
 
 - サーバー: `@todo/db`
 - ネイティブ（型のみ）: `@todo/db/types`
+- 繰り返しヘルパー: `@todo/db/repeat`
 
-### `daily_tasks.days`
+### `tasks`
 
-曜日は **JSON 数値配列** で保存します。
+通常タスクと繰り返しタスクを 1 テーブルで扱います。
 
-- `0` = 月曜 … `6` = 日曜
-
-例: `[0, 2, 4]` → 月・水・金
+| 列 | 説明 |
+|----|------|
+| `name` | タスク名（必須） |
+| `notes` | メモ（nullable） |
+| `icon` | アイコン（default `users`） |
+| `accent` | `pink` \| `brown` \| `green` |
+| `startDate` / `dueDate` | `YYYY-MM-DD`（nullable） |
+| `dueTime` | `HH:mm`（nullable） |
+| `repeatType` | `daily` \| `weekly` \| `monthly` \| `yearly` \| null |
+| `repeatWeekdays` | weekly のみ。`0`=月 … `6`=日 の JSON 配列 |
+| `completedAt` | 完了日時（未完了は null） |
+| `createdAt` / `lastModifiedAt` | タイムスタンプ |
 
 ### `tasks.accent`
 
@@ -194,7 +202,7 @@ curl -c cookies.txt -b cookies.txt http://127.0.0.1:8788/api/tasks
 | `pnpm db:generate` | Drizzle マイグレーション生成 |
 | `pnpm db:migrate:local` | ローカル D1 にマイグレーション適用 |
 | `pnpm --filter server db:migrate:remote` | リモート（本番）D1 にマイグレーション適用 |
-| `pnpm --filter server deploy` | Worker を Cloudflare にデプロイ |
+| `pnpm --filter server run deploy` | Worker を Cloudflare にデプロイ |
 | `pnpm typecheck` | TypeScript 型チェック |
 
 ## 本番デプロイ（Workers + D1）
@@ -240,7 +248,7 @@ pnpm exec wrangler deploy --dry-run
 5. デプロイ:
 
 ```bash
-pnpm deploy
+pnpm --filter server run deploy
 ```
 
 6. 出力された `https://todo-server.<SUBDOMAIN>.workers.dev` を `wrangler.jsonc` の `vars.BETTER_AUTH_URL` に書き、必要なら再デプロイ。

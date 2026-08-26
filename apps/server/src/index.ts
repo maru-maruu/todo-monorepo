@@ -4,7 +4,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createAuth } from "./auth";
 import { sessionMiddleware } from "./middleware/session";
-import { dailyTasksRouter } from "./routes/daily-tasks";
 import { settingsRouter } from "./routes/settings";
 import { tasksRouter } from "./routes/tasks";
 import type { AppEnv } from "./types";
@@ -46,7 +45,6 @@ app.on(["GET", "POST"], "/api/auth/*", (c) => {
 const api = new Hono<AppEnv>();
 api.use("*", sessionMiddleware);
 api.route("/tasks", tasksRouter);
-api.route("/daily-tasks", dailyTasksRouter);
 api.route("/settings", settingsRouter);
 app.route("/api", api);
 
